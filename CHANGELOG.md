@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **HTTP status check (`http.status`).** A 4xx/5xx response is now reported as
+  an error-severity finding (new `http` category) instead of a verbose-only
+  warning, so `--fail-on error` catches a broken staging URL in CI. Asset
+  probing is skipped on error pages.
+- **`--min-score <n>`.** Exit 1 when the score falls below a threshold — a
+  simpler CI gate than per-severity `--fail-on`.
+- **Responsive image collection.** Asset scanning now understands `srcset`
+  (largest candidate wins, comma-in-URL safe), `<picture><source>`,
+  `<video poster>`, and `<link rel="preload">` / `modulepreload`, so oversized
+  responsive/art-directed images are no longer invisible to the size checks.
+- **Release automation.** Pushing a `v*` tag now lint/typechecks/tests and
+  publishes to npm with provenance (`.github/workflows/release.yml`).
+- **CI:** coverage reporting (`vitest --coverage`) and a real-Chromium rendered-
+  mode smoke test job.
+- **Tests:** end-to-end CLI tests (exit codes, flag validation, `--json`,
+  `--output`, `--min-score`).
+
+### Fixed
+
+- `--version` can no longer drift from `package.json`: the version is resolved
+  from `package.json` at runtime instead of a hand-synced constant.
+
 ## [0.4.0] - 2026-07-01
 
 Version re-baseline — **no functional changes over `0.1.2`.** The `0.1.x`
