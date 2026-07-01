@@ -1,5 +1,13 @@
 import type { ShipCheckRule } from '../types/rule.js';
-import { accessibleName, collapse, info, pass, sample, warn } from './_helpers.js';
+import {
+  accessibleName,
+  collapse,
+  info,
+  isHiddenFromA11y,
+  pass,
+  sample,
+  warn,
+} from './_helpers.js';
 
 const langRule: ShipCheckRule = {
   id: 'a11y.html_lang',
@@ -31,8 +39,8 @@ const imageAltRule: ShipCheckRule = {
       const $el = $(el);
       // An explicit empty alt ("") marks a decorative image and is valid.
       const hasAlt = $el.attr('alt') !== undefined;
-      const hidden = $el.attr('aria-hidden') === 'true' || $el.attr('role') === 'presentation';
-      if (!hasAlt && !hidden) {
+      const decorative = $el.attr('role') === 'presentation' || isHiddenFromA11y($el);
+      if (!hasAlt && !decorative) {
         offenders.push(collapse($el.attr('src')) || '(inline image)');
       }
     }
@@ -59,15 +67,22 @@ const buttonTextRule: ShipCheckRule = {
     ).toArray();
     if (buttons.length === 0) return [];
 
-    let missing = 0;
+    const offenders: string[] = [];
     for (const el of buttons) {
-      if (!accessibleName($, $(el))) missing += 1;
+      const $el = $(el);
+      if (isHiddenFromA11y($el)) continue;
+      if (!accessibleName($, $el)) {
+        const tag = String($el.prop('tagName') ?? 'button').toLowerCase();
+        const hint = collapse($el.attr('id') || $el.attr('class') || $el.attr('name'));
+        offenders.push(hint ? `${tag}.${hint}` : `<${tag}>`);
+      }
     }
-    if (missing === 0) {
+    if (offenders.length === 0) {
       return [pass('a11y.button_text.ok', 'All buttons have accessible text')];
     }
     return [
-      warn('a11y.button_text.missing', `${missing} button(s) have no accessible text`, {
+      warn('a11y.button_text.missing', `${offenders.length} button(s) have no accessible text`, {
+        evidence: sample(offenders),
         suggestion: 'Give each button visible text or an aria-label.',
       }),
     ];
@@ -82,15 +97,20 @@ const linkTextRule: ShipCheckRule = {
     const links = $('a[href]').toArray();
     if (links.length === 0) return [];
 
-    let missing = 0;
+    const offenders: string[] = [];
     for (const el of links) {
-      if (!accessibleName($, $(el))) missing += 1;
+      const $el = $(el);
+      if (isHiddenFromA11y($el)) continue;
+      if (!accessibleName($, $el)) {
+        offenders.push(collapse($el.attr('href')) || '(link)');
+      }
     }
-    if (missing === 0) {
+    if (offenders.length === 0) {
       return [pass('a11y.link_text.ok', 'All links have readable text')];
     }
     return [
-      warn('a11y.link_text.missing', `${missing} link(s) have no readable text`, {
+      warn('a11y.link_text.missing', `${offenders.length} link(s) have no readable text`, {
+        evidence: sample(offenders),
         suggestion: 'Ensure links contain text or an aria-label (icon-only links need one).',
       }),
     ];
@@ -105,13 +125,14 @@ const inputLabelRule: ShipCheckRule = {
   run(ctx) {
     const $ = ctx.document;
     const controls = $('input, select, textarea').toArray();
-    let missing = 0;
+    const offenders: string[] = [];
     let considered = 0;
 
     for (const el of controls) {
       const $el = $(el);
       const type = (collapse($el.attr('type')) || 'text').toLowerCase();
       if ($el.is('input') && IGNORED_INPUT_TYPES.has(type)) continue;
+      if (isHiddenFromA11y($el)) continue;
       considered += 1;
 
       const id = collapse($el.attr('id'));
@@ -122,15 +143,20 @@ const inputLabelRule: ShipCheckRule = {
         collapse($el.attr('title')).length > 0 ||
         $el.closest('label').length > 0;
 
-      if (!labelled) missing += 1;
+      if (!labelled) {
+        const tag = String($el.prop('tagName') ?? 'input').toLowerCase();
+        const hint = collapse($el.attr('name') || id || type);
+        offenders.push(hint ? `${tag}[${hint}]` : `<${tag}>`);
+      }
     }
 
     if (considered === 0) return [];
-    if (missing === 0) {
+    if (offenders.length === 0) {
       return [pass('a11y.input_label.ok', 'All form controls have labels')];
     }
     return [
-      warn('a11y.input_label.missing', `${missing} form control(s) missing a label`, {
+      warn('a11y.input_label.missing', `${offenders.length} form control(s) missing a label`, {
+        evidence: sample(offenders),
         suggestion: 'Associate a <label for>, wrap the control in a <label>, or add aria-label.',
       }),
     ];
@@ -146,6 +172,7 @@ const emptyHeadingRule: ShipCheckRule = {
     let empty = 0;
     for (const el of headings) {
       const $el = $(el);
+      if (isHiddenFromA11y($el)) continue;
       if (!collapse($el.text()) && !accessibleName($, $el)) empty += 1;
     }
     if (empty === 0) return [];

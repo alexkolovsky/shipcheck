@@ -57,7 +57,24 @@ export function accessibleName($: CheerioAPI, $el: CheerioEl): string {
   );
   if (imgAlt) return imgAlt;
 
+  // Icon-only controls commonly name themselves via a descendant SVG's
+  // <title> or an aria-label on the SVG/inner element.
+  const svgTitle = collapse($el.find('svg title').first().text());
+  if (svgTitle) return svgTitle;
+
+  const descendantAria = collapse($el.find('[aria-label]').first().attr('aria-label'));
+  if (descendantAria) return descendantAria;
+
   return collapse($el.attr('title'));
+}
+
+/**
+ * True when the element (or any ancestor) is removed from the accessibility
+ * tree via `aria-hidden="true"` or the `hidden` attribute. Such elements should
+ * not be flagged for missing names/labels.
+ */
+export function isHiddenFromA11y($el: CheerioEl): boolean {
+  return $el.closest('[aria-hidden="true"], [hidden]').length > 0;
 }
 
 /** Join a small sample of items for evidence, noting how many were omitted. */

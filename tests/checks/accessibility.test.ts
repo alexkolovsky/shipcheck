@@ -42,6 +42,22 @@ describe('Accessibility checks', () => {
     expect(byId(results, 'a11y.link_text.missing')?.title).toContain('1 link');
   });
 
+  it('does not flag aria-hidden links or icon links named via a descendant SVG', async () => {
+    const results = await runRules(
+      accessibilityRules,
+      doc({
+        body: [
+          '<a href="/ok">Home</a>',
+          '<a href="/hidden" aria-hidden="true"></a>',
+          '<a href="/gh"><span><svg aria-label="GitHub"></svg></span></a>',
+          '<a href="/dc"><svg><title>Discord</title></svg></a>',
+        ].join(''),
+      }),
+    );
+    expect(byId(results, 'a11y.link_text.ok')?.status).toBe('pass');
+    expect(ids(results)).not.toContain('a11y.link_text.missing');
+  });
+
   it('flags inputs without labels but accepts aria-label and wrapping label', async () => {
     const results = await runRules(
       accessibilityRules,
