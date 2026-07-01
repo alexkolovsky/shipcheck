@@ -4,7 +4,7 @@
   "description": "Catch common website launch mistakes before your users do. A practical pre-launch checker for SEO, accessibility, performance, analytics, and security.",
   "type": "module",
   "license": "MIT",
-  "author": "Alexander Kolovskiy",
+  "author": "Alexander Kolovsky",
   "homepage": "https://github.com/alexkolovsky/shipcheck#readme",
   "repository": {
     "type": "git",
