@@ -20,6 +20,7 @@ interface CliOptions {
   output?: string;
   ecommerce?: boolean;
   failOn?: string;
+  minScore?: number;
   timeout?: number;
   maxPages?: number;
   config?: string;
@@ -32,7 +33,8 @@ interface CliOptions {
 
 const WAIT_EVENTS = ['load', 'domcontentloaded', 'networkidle', 'commit'] as const;
 
-function computeExitCode(report: ShipCheckReport, failOn?: string): number {
+function computeExitCode(report: ShipCheckReport, failOn?: string, minScore?: number): number {
+  if (minScore !== undefined && report.score < minScore) return 1;
   if (!failOn) return 0;
   const { errors, warnings } = report.summary;
   if (failOn === 'error') return errors > 0 ? 1 : 0;
@@ -51,6 +53,14 @@ async function main(target: string, options: CliOptions): Promise<void> {
   }
   if (options.failOn && !['warning', 'error'].includes(options.failOn)) {
     logger.error(`Unknown --fail-on level: ${options.failOn} (use warning or error)`);
+    process.exitCode = 1;
+    return;
+  }
+  if (
+    options.minScore !== undefined &&
+    (!Number.isInteger(options.minScore) || options.minScore < 0 || options.minScore > 100)
+  ) {
+    logger.error(`Invalid --min-score: expected an integer between 0 and 100`);
     process.exitCode = 1;
     return;
   }
@@ -103,7 +113,7 @@ async function main(target: string, options: CliOptions): Promise<void> {
       process.stdout.write(`${output}\n`);
     }
 
-    process.exitCode = computeExitCode(report, options.failOn);
+    process.exitCode = computeExitCode(report, options.failOn, options.minScore);
   } catch (error) {
     logger.error((error as Error).message);
     if (options.verbose) console.error(error);
@@ -122,6 +132,9 @@ program
   .option('--output <path>', 'Write the report to a file instead of stdout')
   .option('--ecommerce', 'Enable e-commerce product checks')
   .option('--fail-on <level>', 'Exit 1 when issues at this level exist: warning | error')
+  .option('--min-score <n>', 'Exit 1 when the score is below this number (0-100)', (value) =>
+    Number.parseInt(value, 10),
+  )
   .option('--timeout <ms>', 'Per-request network timeout in ms', (value) =>
     Number.parseInt(value, 10),
   )

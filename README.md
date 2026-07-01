@@ -111,6 +111,7 @@ shipcheck https://example.com --fail-on error
 | `--output <path>`   | Write the report to a file instead of stdout                                     |
 | `--ecommerce`       | Enable e-commerce product checks                                                 |
 | `--fail-on <level>` | Exit `1` when issues at this level exist: `warning`/`error`                      |
+| `--min-score <n>`   | Exit `1` when the score is below `n` (0–100)                                     |
 | `--timeout <ms>`    | Per-request network timeout (default `15000`)                                    |
 | `--config <path>`   | Path to a `shipcheck.config.json` file                                           |
 | `--rendered`        | Load the page in a headless browser before checking (see below)                  |
@@ -122,14 +123,17 @@ shipcheck https://example.com --fail-on error
 
 ### Exit codes
 
-- `0` — the scan completed (default; use `--fail-on` to change this).
-- `1` — a network/runtime error, or issues met your `--fail-on` threshold.
+- `0` — the scan completed (default; use `--fail-on` / `--min-score` to change this).
+- `1` — a network/runtime error, issues met your `--fail-on` threshold, or the
+  score fell below `--min-score`.
 
 ## What it checks
 
-Checks are grouped into six categories. See [`docs/checks.md`](docs/checks.md)
+Checks are grouped into categories. See [`docs/checks.md`](docs/checks.md)
 for the full list of rule IDs and severities.
 
+- **HTTP** — the page responds successfully (a 4xx/5xx page is flagged as an
+  error, since every other finding would describe the error page).
 - **SEO** — title, meta description, H1s, canonical, accidental `noindex`, Open
   Graph / Twitter cards, robots.txt & sitemap.xml.
 - **Accessibility** — `html[lang]`, image `alt`, button/link/input accessible
