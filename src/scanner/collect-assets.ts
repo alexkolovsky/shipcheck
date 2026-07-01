@@ -13,6 +13,57 @@ export interface AssetRef {
 }
 
 /**
+ * Pick the URL of the largest candidate in a `srcset` (highest `w` or `x`
+ * descriptor) — the worst-case download a browser may choose. Follows the
+ * WHATWG parsing shape so URLs containing commas (e.g. Cloudinary transforms)
+ * survive, with or without whitespace between candidates.
+ */
+export function largestSrcsetCandidate(srcset: string): string | undefined {
+  let best: string | undefined;
+  let bestWeight = -1;
+  let input = srcset;
+
+  while (input) {
+    input = input.replace(/^[\s,]+/, '');
+    const urlMatch = /^\S+/.exec(input);
+    if (!urlMatch) break;
+    let url = urlMatch[0];
+    input = input.slice(url.length);
+
+    if (url.endsWith(',')) {
+      // URL with no descriptor, running straight into the next candidate.
+      url = url.replace(/,+$/, '');
+    } else {
+      // Consume the descriptor (everything up to the next comma).
+      const commaIndex = input.indexOf(',');
+      const descriptor = (commaIndex === -1 ? input : input.slice(0, commaIndex)).trim();
+      input = commaIndex === -1 ? '' : input.slice(commaIndex + 1);
+      const parsed = Number.parseFloat(descriptor);
+      const weight = Number.isFinite(parsed) ? parsed : 1;
+      if (url && !url.startsWith('data:') && weight > bestWeight) {
+        bestWeight = weight;
+        best = url;
+      }
+      continue;
+    }
+
+    if (url && !url.startsWith('data:') && 1 > bestWeight) {
+      bestWeight = 1;
+      best = url;
+    }
+  }
+
+  return best;
+}
+
+/** Map a `<link rel="preload" as="…">` value to an asset type. */
+const PRELOAD_AS_TYPES: Record<string, AssetType> = {
+  script: 'script',
+  style: 'stylesheet',
+  image: 'image',
+};
+
+/**
  * Walk the DOM and collect referenced images, scripts, and stylesheets. Returns
  * raw refs (unresolved `src`) so both the URL and local scanners can resolve
  * them against their own base.
@@ -20,17 +71,39 @@ export interface AssetRef {
 export function collectAssetRefs($: CheerioAPI): AssetRef[] {
   const refs: AssetRef[] = [];
 
-  $('img[src]').each((_, el) => {
-    const src = ($(el).attr('src') ?? '').trim();
+  $('img').each((_, el) => {
+    const $el = $(el);
+    // Prefer the largest srcset candidate (what a hi-DPI browser downloads)
+    // over the fallback src.
+    const src = largestSrcsetCandidate($el.attr('srcset') ?? '') ?? ($el.attr('src') ?? '').trim();
     if (!src || src.startsWith('data:')) return;
-    const width = $(el).attr('width');
-    const height = $(el).attr('height');
+    const width = $el.attr('width');
+    const height = $el.attr('height');
     refs.push({
       src,
       type: 'image',
       hasDimensions: Boolean(width && height),
-      loading: $(el).attr('loading'),
+      loading: $el.attr('loading'),
     });
+  });
+
+  // Art-directed variants: each <source> is an alternative the page may load.
+  $('picture source[srcset]').each((_, el) => {
+    const src = largestSrcsetCandidate($(el).attr('srcset') ?? '');
+    if (!src) return;
+    const $img = $(el).closest('picture').find('img').first();
+    refs.push({
+      src,
+      type: 'image',
+      hasDimensions: Boolean($img.attr('width') && $img.attr('height')),
+      loading: $img.attr('loading'),
+    });
+  });
+
+  $('video[poster]').each((_, el) => {
+    const src = ($(el).attr('poster') ?? '').trim();
+    if (!src || src.startsWith('data:')) return;
+    refs.push({ src, type: 'image' });
   });
 
   $('script[src]').each((_, el) => {
@@ -43,6 +116,16 @@ export function collectAssetRefs($: CheerioAPI): AssetRef[] {
     const src = ($(el).attr('href') ?? '').trim();
     if (!src) return;
     refs.push({ src, type: 'stylesheet' });
+  });
+
+  $('link[rel~="preload"][href], link[rel~="modulepreload"][href]').each((_, el) => {
+    const $el = $(el);
+    const src = ($el.attr('href') ?? '').trim();
+    if (!src || src.startsWith('data:')) return;
+    const rel = ($el.attr('rel') ?? '').toLowerCase();
+    const as = ($el.attr('as') ?? '').toLowerCase();
+    const type = rel.includes('modulepreload') ? 'script' : (PRELOAD_AS_TYPES[as] ?? 'other');
+    refs.push({ src, type });
   });
 
   return refs;
