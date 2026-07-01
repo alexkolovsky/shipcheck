@@ -9,8 +9,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
+      # Show every Node version's result instead of cancelling the matrix on
+      # the first failure.
+      fail-fast: false
       matrix:
-        node-version: [18, 20, 22]
+        node-version: [20, 22]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

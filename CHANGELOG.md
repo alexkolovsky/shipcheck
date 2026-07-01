@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Node.js ≥ 20 is now required** (was ≥ 18). A transitive dependency
+  (`undici`, via `cheerio`) dropped Node 18 — which is EOL — so the tool could
+  not actually run there. The CI matrix drops Node 18 to match.
+
 ### Added
 
 - **HTTP status check (`http.status`).** A 4xx/5xx response is now reported as
