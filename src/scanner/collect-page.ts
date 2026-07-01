@@ -1,7 +1,7 @@
 import type { OriginFileProbe } from '../types/context.js';
 import type { Logger } from '../utils/logger.js';
 
-export const USER_AGENT = 'ShipCheck/0.1 (+https://github.com/alexanderkolovsky/shipcheck)';
+export const USER_AGENT = 'ShipCheck/0.1 (+https://github.com/alexkolovsky/shipcheck)';
 
 export interface FetchedPage {
   requestedUrl: string;

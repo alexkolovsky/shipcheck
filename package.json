@@ -1,17 +1,17 @@
 {
-  "name": "shipcheck",
+  "name": "ship-check",
   "version": "0.1.0",
   "description": "Catch common website launch mistakes before your users do. A practical pre-launch checker for SEO, accessibility, performance, analytics, and security.",
   "type": "module",
   "license": "MIT",
   "author": "Alexander Kolovskiy",
-  "homepage": "https://github.com/alexanderkolovsky/shipcheck#readme",
+  "homepage": "https://github.com/alexkolovsky/shipcheck#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alexanderkolovsky/shipcheck.git"
+    "url": "git+https://github.com/alexkolovsky/shipcheck.git"
   },
   "bugs": {
-    "url": "https://github.com/alexanderkolovsky/shipcheck/issues"
+    "url": "https://github.com/alexkolovsky/shipcheck/issues"
   },
   "keywords": [
     "seo",
