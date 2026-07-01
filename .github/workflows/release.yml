@@ -39,14 +39,8 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
-      - name: Check OIDC token availability
-        run: |
-          if [ -n "$ACTIONS_ID_TOKEN_REQUEST_URL" ]; then
-            echo "OK: GitHub OIDC token request URL is available"
-          else
-            echo "MISSING: no OIDC token request URL — id-token permission is not effective" >&2
-            exit 1
-          fi
       # No token: OIDC provides the credential, and provenance is automatic.
-      # --loglevel http surfaces the OIDC exchange with the registry in the log.
+      # --loglevel http keeps the OIDC exchange visible in the log (a 404 on
+      # the token/exchange POST means the npm trusted-publisher config no
+      # longer matches this workflow).
       - run: npm publish --access public --loglevel http
