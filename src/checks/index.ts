@@ -3,12 +3,14 @@ import type { ShipCheckRule } from '../types/rule.js';
 import { accessibilityRules } from './accessibility.js';
 import { analyticsRules } from './analytics.js';
 import { ecommerceRules } from './ecommerce.js';
+import { httpRules } from './http.js';
 import { performanceRules } from './performance.js';
 import { securityRules } from './security.js';
 import { seoRules } from './seo.js';
 
 /** Rules that always run, in report order. */
 export const coreRules: ShipCheckRule[] = [
+  ...httpRules,
   ...seoRules,
   ...accessibilityRules,
   ...performanceRules,
@@ -17,6 +19,7 @@ export const coreRules: ShipCheckRule[] = [
 ];
 
 export {
+  httpRules,
   seoRules,
   accessibilityRules,
   performanceRules,

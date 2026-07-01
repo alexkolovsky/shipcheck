@@ -2,6 +2,7 @@ import type { Category } from '../types/issue.js';
 
 /** Fixed display order for categories across all reporters. */
 export const CATEGORY_ORDER: Category[] = [
+  'http',
   'seo',
   'accessibility',
   'performance',
@@ -11,6 +12,7 @@ export const CATEGORY_ORDER: Category[] = [
 ];
 
 export const CATEGORY_LABELS: Record<Category, string> = {
+  http: 'HTTP',
   seo: 'SEO',
   accessibility: 'Accessibility',
   performance: 'Performance',

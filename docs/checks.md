@@ -7,6 +7,12 @@ Rule IDs are stable and can be used in the [`ignore`](configuration.md) list or
 given a custom severity via the `checks` map. The tables below list the
 **problem** IDs; most have a `pass` counterpart shown in the terminal report.
 
+## HTTP
+
+| Rule ID             | Default | Meaning                                                                                  |
+| ------------------- | ------- | ---------------------------------------------------------------------------------------- |
+| `http.status.error` | error   | The page responded with HTTP 4xx/5xx (URL scans; other findings describe the error page) |
+
 ## SEO
 
 | Rule ID                          | Default | Meaning                                     |

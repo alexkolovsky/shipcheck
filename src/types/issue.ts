@@ -13,7 +13,7 @@ export type Severity = 'info' | 'warning' | 'error';
 export type CheckStatus = 'pass' | Severity;
 
 export type Category =
-  'seo' | 'accessibility' | 'performance' | 'analytics' | 'security' | 'ecommerce';
+  'http' | 'seo' | 'accessibility' | 'performance' | 'analytics' | 'security' | 'ecommerce';
 
 /**
  * The raw output of a single rule. Passing checks are kept so the terminal

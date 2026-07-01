@@ -9,6 +9,7 @@ export interface MakeContextOptions {
   html?: string;
   url?: string;
   headers?: Record<string, string>;
+  status?: number;
   assets?: PageAsset[];
   source?: 'url' | 'local';
   rendered?: boolean;
@@ -30,7 +31,7 @@ export function makeContext(options: MakeContextOptions = {}): ShipCheckContext 
   return {
     url,
     finalUrl: url,
-    status: 200,
+    status: options.status ?? 200,
     html,
     document: cheerio.load(html),
     headers: new Headers(options.headers ?? {}),

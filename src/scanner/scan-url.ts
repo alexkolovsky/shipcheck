@@ -42,7 +42,8 @@ export async function scanUrl(target: string, options: ScanUrlOptions): Promise<
   const document = cheerio.load(page.html);
   const assets = extractAssets(document, page.finalUrl);
 
-  if (options.probeAssets !== false && assets.length > 0) {
+  // Don't waste round-trips sizing the assets of an error page.
+  if (options.probeAssets !== false && assets.length > 0 && page.status < 400) {
     options.logger?.debug(`Probing ${assets.length} asset(s) for size`);
     await enrichAssetSizes(assets, {
       timeoutMs: options.config.timeoutMs,

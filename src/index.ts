@@ -21,6 +21,7 @@ export {
   getRules,
   coreRules,
   ecommerceRules,
+  httpRules,
   seoRules,
   accessibilityRules,
   performanceRules,
