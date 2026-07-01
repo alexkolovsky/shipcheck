@@ -17,7 +17,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npx ship-check https://staging.example.com --fail-on error
+      - run: npx shipcheckit https://staging.example.com --fail-on error
 ```
 
 ## Scan a build directory (no deploy needed)
@@ -36,14 +36,14 @@ jobs:
           node-version: 20
       - run: npm ci
       - run: npm run build # produces ./dist
-      - run: npx ship-check ./dist --fail-on warning
+      - run: npx shipcheckit ./dist --fail-on warning
 ```
 
 ## Upload a Markdown report as an artifact
 
 ```yaml
 - name: Run ShipCheck
-  run: npx ship-check https://staging.example.com --report markdown --output shipcheck-report.md
+  run: npx shipcheckit https://staging.example.com --report markdown --output shipcheck-report.md
 - uses: actions/upload-artifact@v4
   with:
     name: shipcheck-report
@@ -57,7 +57,7 @@ Combine the Markdown output with a comment action, for example
 
 ```yaml
 - name: Run ShipCheck
-  run: npx ship-check https://staging.example.com --report markdown --output shipcheck-report.md
+  run: npx shipcheckit https://staging.example.com --report markdown --output shipcheck-report.md
 - uses: marocchino/sticky-pull-request-comment@v2
   with:
     path: shipcheck-report.md

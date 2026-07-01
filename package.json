@@ -1,5 +1,5 @@
 {
-  "name": "ship-check",
+  "name": "shipcheckit",
   "version": "0.1.0",
   "description": "Catch common website launch mistakes before your users do. A practical pre-launch checker for SEO, accessibility, performance, analytics, and security.",
   "type": "module",

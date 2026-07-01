@@ -8,7 +8,7 @@ and security mistakes that quietly slip into production, and prints a clear,
 actionable report in one command.
 
 ```bash
-npx ship-check https://example.com
+npx shipcheckit https://example.com
 ```
 
 It is **not** trying to replace Lighthouse, axe, or a full security scanner. It
@@ -63,15 +63,15 @@ don't look for, but which quietly corrupts your conversion numbers.
 Run it directly with `npx` (no install):
 
 ```bash
-npx ship-check https://example.com
+npx shipcheckit https://example.com
 ```
 
 Or install it globally / as a dev dependency:
 
 ```bash
-npm install -g ship-check
+npm install -g shipcheckit
 # or
-npm install --save-dev ship-check
+npm install --save-dev shipcheckit
 ```
 
 Once installed, the command is just `shipcheck` (the examples below use it).
@@ -203,7 +203,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: npx ship-check https://staging.example.com --fail-on error
+      - run: npx shipcheckit https://staging.example.com --fail-on error
 ```
 
 More recipes (build-dir scanning, Markdown artifacts) in
@@ -212,7 +212,7 @@ More recipes (build-dir scanning, Markdown artifacts) in
 ## Programmatic API
 
 ```ts
-import { runShipCheck, resolveConfig, renderJson } from 'ship-check';
+import { runShipCheck, resolveConfig, renderJson } from 'shipcheckit';
 
 const report = await runShipCheck('https://example.com', {
   config: resolveConfig(),
@@ -227,7 +227,7 @@ console.log(renderJson(report));
 Adding a check is intentionally small — each rule is independent:
 
 ```ts
-import type { ShipCheckRule } from 'ship-check';
+import type { ShipCheckRule } from 'shipcheckit';
 
 export const myRule: ShipCheckRule = {
   id: 'seo.example',
