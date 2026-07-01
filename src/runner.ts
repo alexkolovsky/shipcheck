@@ -53,6 +53,7 @@ export async function runChecks(context: ShipCheckContext): Promise<ShipCheckRep
   return {
     target: context.url,
     finalUrl: context.finalUrl,
+    rendered: context.rendered,
     score: computeScore(issues),
     summary: summarize(processed),
     issues,

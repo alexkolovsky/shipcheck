@@ -18,6 +18,8 @@ export interface ReportSummary {
 export interface ShipCheckReport {
   target: string;
   finalUrl: string;
+  /** True when the page was loaded through a headless browser (rendered mode). */
+  rendered: boolean;
   /** 0–100, where 100 means no issues found. */
   score: number;
   summary: ReportSummary;
@@ -30,6 +32,7 @@ export interface ShipCheckReport {
 export interface JsonReport {
   target: string;
   finalUrl: string;
+  rendered: boolean;
   score: number;
   summary: ReportSummary;
   issues: ShipCheckIssue[];

@@ -104,19 +104,21 @@ shipcheck https://example.com --fail-on error
 
 ### Options
 
-| Option              | Description                                                 |
-| ------------------- | ----------------------------------------------------------- |
-| `--json`            | Output a JSON report (shorthand for `--report json`)        |
-| `--report <type>`   | `terminal` (default), `json`, or `markdown`                 |
-| `--output <path>`   | Write the report to a file instead of stdout                |
-| `--ecommerce`       | Enable e-commerce product checks                            |
-| `--fail-on <level>` | Exit `1` when issues at this level exist: `warning`/`error` |
-| `--timeout <ms>`    | Per-request network timeout (default `15000`)               |
-| `--config <path>`   | Path to a `shipcheck.config.json` file                      |
-| `--no-probe-assets` | Skip network probing of asset sizes (faster URL scans)      |
-| `--verbose`         | Print verbose debug output to stderr                        |
-| `-v, --version`     | Show version                                                |
-| `--help`            | Show help                                                   |
+| Option              | Description                                                                      |
+| ------------------- | -------------------------------------------------------------------------------- |
+| `--json`            | Output a JSON report (shorthand for `--report json`)                             |
+| `--report <type>`   | `terminal` (default), `json`, or `markdown`                                      |
+| `--output <path>`   | Write the report to a file instead of stdout                                     |
+| `--ecommerce`       | Enable e-commerce product checks                                                 |
+| `--fail-on <level>` | Exit `1` when issues at this level exist: `warning`/`error`                      |
+| `--timeout <ms>`    | Per-request network timeout (default `15000`)                                    |
+| `--config <path>`   | Path to a `shipcheck.config.json` file                                           |
+| `--rendered`        | Load the page in a headless browser before checking (see below)                  |
+| `--wait-until <e>`  | With `--rendered`: `load` (default), `domcontentloaded`, `networkidle`, `commit` |
+| `--no-probe-assets` | Skip network probing of asset sizes (faster URL scans)                           |
+| `--verbose`         | Print verbose debug output to stderr                                             |
+| `-v, --version`     | Show version                                                                     |
+| `--help`            | Show help                                                                        |
 
 ### Exit codes
 
@@ -142,10 +144,35 @@ for the full list of rule IDs and severities.
 - **E-commerce** (`--ecommerce`) — Product JSON-LD, name, price, availability,
   image, add-to-cart control, cart/checkout link.
 
-> ShipCheck reports **risks**, not guarantees. Because it reads the static HTML,
-> tags injected later by GTM or client-side frameworks won't be seen — so
-> "no duplicate GA4 detected" means _in the page source_. Rendered-DOM support
-> is on the roadmap.
+> ShipCheck reports **risks**, not guarantees. By default it reads the static
+> HTML, so tags injected later by GTM or client-side frameworks won't be seen —
+> "no duplicate GA4 detected" means _in the page source_. To check the rendered
+> DOM instead, use [`--rendered`](#rendered-mode).
+
+### Rendered mode
+
+By default ShipCheck is a fast static analyzer and only sees the HTML as
+transferred. For single-page apps and pages that inject tags, meta, or content
+after hydration, pass `--rendered` to load the page in a headless browser and
+check the **post-JavaScript DOM**:
+
+```bash
+shipcheck https://example.com --rendered
+# give late-loading scripts (analytics, etc.) more time to appear:
+shipcheck https://example.com --rendered --wait-until networkidle
+```
+
+Rendered mode uses [Playwright](https://playwright.dev/), which is an **optional
+peer dependency** — the default install stays lightweight. Install it once to use
+`--rendered`:
+
+```bash
+npm i -D playwright
+npx playwright install chromium
+```
+
+Everything else works the same; the report is just computed against the rendered
+DOM (and notes `Mode: rendered`).
 
 ## Reports
 

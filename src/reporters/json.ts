@@ -5,6 +5,7 @@ export function toJsonReport(report: ShipCheckReport): JsonReport {
   return {
     target: report.target,
     finalUrl: report.finalUrl,
+    rendered: report.rendered,
     score: report.score,
     summary: report.summary,
     issues: report.issues,

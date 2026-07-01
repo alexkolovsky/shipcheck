@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Rendered mode (`--rendered`).** Optionally load a page in a headless browser
+  (Playwright) and run all checks against the post-JavaScript DOM instead of the
+  raw HTML source — so SPA-injected analytics tags, meta, and content are seen.
+  Playwright is an **optional peer dependency**, so the default install stays
+  lightweight; `--rendered` prints install instructions if it's missing. Includes
+  `--wait-until <event>` (`load` | `domcontentloaded` | `networkidle` | `commit`)
+  and matching `rendered` / `renderWaitUntil` config keys. Reports note
+  `Mode: rendered` and expose `"rendered": true` in JSON.
+
 ### Fixed
 
 - **Accessibility:** inline `display:none` and `visibility:hidden` styles are now

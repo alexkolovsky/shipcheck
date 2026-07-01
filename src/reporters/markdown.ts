@@ -16,6 +16,9 @@ export function renderMarkdown(report: ShipCheckReport): string {
   if (report.finalUrl !== report.target) {
     lines.push(`**Final URL:** ${report.finalUrl}  `);
   }
+  if (report.rendered) {
+    lines.push('**Mode:** rendered (headless browser)  ');
+  }
   lines.push(`**Score:** ${report.score}/100`, '');
 
   lines.push('## Summary', '');

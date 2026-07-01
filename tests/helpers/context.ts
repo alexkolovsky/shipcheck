@@ -11,6 +11,7 @@ export interface MakeContextOptions {
   headers?: Record<string, string>;
   assets?: PageAsset[];
   source?: 'url' | 'local';
+  rendered?: boolean;
   robotsTxt?: OriginFileProbe;
   sitemapXml?: OriginFileProbe;
   config?: Partial<ResolvedConfig>;
@@ -35,6 +36,7 @@ export function makeContext(options: MakeContextOptions = {}): ShipCheckContext 
     headers: new Headers(options.headers ?? {}),
     assets: options.assets ?? [],
     source: options.source ?? 'url',
+    rendered: options.rendered ?? false,
     robotsTxt: options.robotsTxt,
     sitemapXml: options.sitemapXml,
     config,

@@ -1,5 +1,8 @@
 import type { Category, Severity } from './issue.js';
 
+/** Playwright navigation wait condition used by rendered mode. */
+export type RenderWaitUntil = 'load' | 'domcontentloaded' | 'networkidle' | 'commit';
+
 /** Numeric limits used by the performance and SEO checks. */
 export interface Thresholds {
   /** Flag individual images larger than this (KB). */
@@ -33,6 +36,10 @@ export interface ResolvedConfig {
   severityOverrides: Record<string, Severity | 'off'>;
   /** Per-request network timeout in milliseconds. */
   timeoutMs: number;
+  /** Load pages in a headless browser (Playwright) before checking them. */
+  rendered: boolean;
+  /** Navigation wait condition used when {@link rendered} is true. */
+  renderWaitUntil: RenderWaitUntil;
 }
 
 /** The shape of an optional `shipcheck.config.json` file. All keys optional. */
@@ -42,6 +49,8 @@ export interface UserConfig {
   ignore?: string[];
   checks?: Record<string, Severity | 'off'>;
   timeoutMs?: number;
+  rendered?: boolean;
+  renderWaitUntil?: RenderWaitUntil;
 }
 
 export type CategoryFilter = Category;

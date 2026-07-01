@@ -25,8 +25,12 @@ interface CliOptions {
   config?: string;
   /** Commander sets this false when `--no-probe-assets` is passed. */
   probeAssets?: boolean;
+  rendered?: boolean;
+  waitUntil?: string;
   verbose?: boolean;
 }
+
+const WAIT_EVENTS = ['load', 'domcontentloaded', 'networkidle', 'commit'] as const;
 
 function computeExitCode(report: ShipCheckReport, failOn?: string): number {
   if (!failOn) return 0;
@@ -50,12 +54,26 @@ async function main(target: string, options: CliOptions): Promise<void> {
     process.exitCode = 1;
     return;
   }
+  if (
+    options.rendered &&
+    options.waitUntil &&
+    !WAIT_EVENTS.includes(options.waitUntil as (typeof WAIT_EVENTS)[number])
+  ) {
+    logger.error(`Unknown --wait-until: ${options.waitUntil} (use ${WAIT_EVENTS.join(', ')})`);
+    process.exitCode = 1;
+    return;
+  }
 
   try {
     const userConfig = await loadUserConfig({ configPath: options.config });
     const config = resolveConfig(userConfig, {
       ecommerce: options.ecommerce ? true : undefined,
       timeoutMs: options.timeout,
+      rendered: options.rendered ? true : undefined,
+      renderWaitUntil:
+        options.rendered && options.waitUntil
+          ? (options.waitUntil as (typeof WAIT_EVENTS)[number])
+          : undefined,
     });
 
     const kind = classifyTarget(target);
@@ -111,6 +129,15 @@ program
     Number.parseInt(value, 10),
   )
   .option('--config <path>', 'Path to a shipcheck config file')
+  .option(
+    '--rendered',
+    'Load the page in a headless browser (requires Playwright) so checks see the rendered DOM',
+  )
+  .option(
+    '--wait-until <event>',
+    'With --rendered: navigation wait (load, domcontentloaded, networkidle, commit)',
+    'load',
+  )
   .option('--no-probe-assets', 'Skip network probing of asset sizes (faster URL scans)')
   .option('--verbose', 'Print verbose debug output to stderr')
   .action((target: string, options: CliOptions) => main(target, options));

@@ -81,9 +81,7 @@ const HIDDEN_STYLE = /(?:^|[;\s])(?:display\s*:\s*none|visibility\s*:\s*hidden)\
 export function isHiddenFromA11y($el: CheerioEl): boolean {
   if ($el.closest('[aria-hidden="true"], [hidden]').length > 0) return true;
   const chain = [...$el.toArray(), ...$el.parents().toArray()];
-  return chain.some(
-    (node) => 'attribs' in node && HIDDEN_STYLE.test(node.attribs.style ?? ''),
-  );
+  return chain.some((node) => 'attribs' in node && HIDDEN_STYLE.test(node.attribs.style ?? ''));
 }
 
 /** Join a small sample of items for evidence, noting how many were omitted. */

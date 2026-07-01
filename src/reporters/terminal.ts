@@ -50,6 +50,9 @@ export function renderTerminal(report: ShipCheckReport, options: { color?: boole
   if (report.finalUrl !== report.target) {
     lines.push(pc.dim(`Final URL: ${report.finalUrl}`));
   }
+  if (report.rendered) {
+    lines.push(pc.dim('Mode: rendered (headless browser)'));
+  }
   lines.push('');
 
   const byCategory = new Map<Category, CheckResult[]>();

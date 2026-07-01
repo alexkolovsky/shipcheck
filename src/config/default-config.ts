@@ -20,4 +20,6 @@ export const defaultConfig: ResolvedConfig = {
   ignore: [],
   severityOverrides: {},
   timeoutMs: 15_000,
+  rendered: false,
+  renderWaitUntil: 'load',
 };

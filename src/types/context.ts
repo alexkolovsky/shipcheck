@@ -51,6 +51,11 @@ export interface ShipCheckContext {
   assets: PageAsset[];
   /** Whether the scan source was a remote URL or the local filesystem. */
   source: 'url' | 'local';
+  /**
+   * True when `html`/`document` reflect the post-JavaScript rendered DOM
+   * (Playwright) rather than the raw transferred source.
+   */
+  rendered: boolean;
   robotsTxt?: OriginFileProbe;
   sitemapXml?: OriginFileProbe;
   config: ResolvedConfig;

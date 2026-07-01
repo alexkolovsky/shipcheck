@@ -90,6 +90,7 @@ export async function scanLocal(
     headers: new Headers(),
     assets,
     source: 'local',
+    rendered: false,
     robotsTxt: { exists: existsSync(robotsPath), url: pathToFileURL(robotsPath).toString() },
     sitemapXml: { exists: existsSync(sitemapPath), url: pathToFileURL(sitemapPath).toString() },
     config: options.config,

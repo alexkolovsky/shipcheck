@@ -27,6 +27,8 @@ Recognized file names (first match wins):
   },
   "ecommerce": false,
   "timeoutMs": 15000,
+  "rendered": false,
+  "renderWaitUntil": "load",
   "checks": {
     "security.csp.missing": "error",
     "seo.meta_description.too_long": "off"
@@ -51,6 +53,21 @@ overridden; unspecified values fall back to the defaults above.
 
 Per-request network timeout in milliseconds. Overridden by `--timeout`.
 
+### `rendered`
+
+`true` to load pages in a headless browser (Playwright) and check the rendered,
+post-JavaScript DOM instead of the raw HTML source. Equivalent to always passing
+`--rendered`. Requires Playwright to be installed
+(`npm i -D playwright && npx playwright install chromium`); it is an optional
+peer dependency, so the default install stays lightweight.
+
+### `renderWaitUntil`
+
+When `rendered` is on, the navigation wait condition: `"load"` (default),
+`"domcontentloaded"`, `"networkidle"`, or `"commit"`. Use `"networkidle"` to give
+late, script-injected tags (analytics, etc.) the best chance to appear.
+Overridden by `--wait-until`.
+
 ### `checks`
 
 Map of **rule ID → severity**, used to re-classify a check:
@@ -72,4 +89,4 @@ For a single run, values are merged in this order (later wins):
 
 1. Built-in defaults
 2. Config file
-3. CLI flags (`--ecommerce`, `--timeout`)
+3. CLI flags (`--ecommerce`, `--timeout`, `--rendered`, `--wait-until`)

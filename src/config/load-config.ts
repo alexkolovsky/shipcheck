@@ -56,5 +56,8 @@ export function resolveConfig(
     ignore: [...(user.ignore ?? []), ...(overrides.ignore ?? [])],
     severityOverrides: { ...user.checks, ...overrides.severityOverrides },
     timeoutMs: overrides.timeoutMs ?? user.timeoutMs ?? defaultConfig.timeoutMs,
+    rendered: overrides.rendered ?? user.rendered ?? defaultConfig.rendered,
+    renderWaitUntil:
+      overrides.renderWaitUntil ?? user.renderWaitUntil ?? defaultConfig.renderWaitUntil,
   };
 }
