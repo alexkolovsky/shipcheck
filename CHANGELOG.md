@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.2] - 2026-07-01
+## [0.4.0] - 2026-07-01
+
+Version re-baselined from the `0.1.x` line to reflect the project's actual
+maturity: the feature set is already complete through the roadmap's e-commerce
+milestone (v0.4.0). Versions `0.1.0` and `0.1.1` remain the earlier npm releases;
+`0.1.2` was superseded by this release before it was published.
 
 ### Added
 
@@ -72,7 +77,7 @@ no headless browser.
   `--no-probe-assets`, `--verbose`, `--config`, `-v/--version`.
 - **Programmatic API** — `runShipCheck`, `resolveConfig`, and the reporters.
 
-[Unreleased]: https://github.com/alexkolovsky/shipcheck/compare/v0.1.2...HEAD
-[0.1.2]: https://github.com/alexkolovsky/shipcheck/compare/v0.1.1...v0.1.2
+[Unreleased]: https://github.com/alexkolovsky/shipcheck/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/alexkolovsky/shipcheck/compare/v0.1.1...v0.4.0
 [0.1.1]: https://github.com/alexkolovsky/shipcheck/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/alexkolovsky/shipcheck/releases/tag/v0.1.0
