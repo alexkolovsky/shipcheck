@@ -1,0 +1,53 @@
+name: Suggest a check
+description: Propose a new rule for ShipCheck to detect.
+title: 'check: '
+labels: ['new-check']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ShipCheck is a collection of small, practical checks. Great suggestions
+        catch a *common launch mistake* with *low false positives*. Thanks!
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - SEO
+        - Accessibility
+        - Performance
+        - Analytics
+        - Security
+        - E-commerce
+        - New category
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What should it check?
+      description: Describe the mistake and how it could be detected from static HTML/headers.
+      placeholder: Flag pages that reference a Google Font but never <link rel="preconnect"> to fonts.gstatic.com.
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Suggested severity
+      options:
+        - info
+        - warning
+        - error
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: Example (markup / evidence)
+      description: A snippet that should trigger it, and (optionally) one that shouldn't.
+      render: html
+  - type: textarea
+    id: false-positives
+    attributes:
+      label: False-positive risks
+      description: When might this fire incorrectly? How could we avoid that?

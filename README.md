@@ -249,6 +249,10 @@ npm run typecheck # tsc --noEmit
 npm run build     # tsup
 ```
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide — project layout, how to
+add a check, rule-ID conventions, and the PR checklist. Changes are tracked in
+[CHANGELOG.md](CHANGELOG.md).
+
 ## Status
 
 ShipCheck is in early development (`v0.1`). Feedback and issues welcome.

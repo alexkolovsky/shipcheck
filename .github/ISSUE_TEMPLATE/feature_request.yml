@@ -1,0 +1,23 @@
+name: Feature request
+description: Suggest a feature or improvement that isn't a new check.
+title: 'feat: '
+labels: ['enhancement']
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+      placeholder: I want to run ShipCheck against a list of URLs in one command.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What would you like ShipCheck to do? A CLI flag, output format, config option…
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
