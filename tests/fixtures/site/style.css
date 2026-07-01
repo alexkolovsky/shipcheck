@@ -1,0 +1,14 @@
+:root {
+  --brand: #0057ff;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  color: #111;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
