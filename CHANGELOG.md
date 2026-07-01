@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`shipcheckit` command alias.** The installed binary now answers to both
+  `shipcheck` and `shipcheckit`, so the package name and the command name are
+  interchangeable. The README now explains the naming up front (`shipcheck`
+  on npm is an unrelated tool — the package is `shipcheckit`).
+
 ### Changed
 
 - **Node.js ≥ 20 is now required** (was ≥ 18). A transitive dependency

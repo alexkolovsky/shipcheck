@@ -13,7 +13,7 @@ prefer to skip ambiguous cases rather than flag them.
 
 ## Prerequisites
 
-- **Node.js 18+**
+- **Node.js 20+**
 - **npm** (the repo uses `package-lock.json`)
 
 ## Getting started

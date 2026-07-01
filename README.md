@@ -11,6 +11,11 @@ actionable report in one command.
 npx shipcheckit https://example.com
 ```
 
+> **Naming note:** the npm package is **`shipcheckit`** (the name `shipcheck`
+> was already taken by an unrelated tool — `npx shipcheck` runs something
+> else!). Once installed, the command is `shipcheck`, with `shipcheckit` as
+> an alias.
+
 It is **not** trying to replace Lighthouse, axe, or a full security scanner. It
 answers one question well:
 
@@ -74,9 +79,10 @@ npm install -g shipcheckit
 npm install --save-dev shipcheckit
 ```
 
-Once installed, the command is just `shipcheck` (the examples below use it).
+Once installed, the command is `shipcheck` — `shipcheckit` works too, so
+whichever name you remember is fine. The examples below use `shipcheck`.
 
-Requires **Node.js 18+**. ShipCheck is a fast, static analyzer (`fetch` +
+Requires **Node.js 20+**. ShipCheck is a fast, static analyzer (`fetch` +
 [cheerio](https://cheerio.js.org/)) — no headless browser to download.
 
 ## Usage

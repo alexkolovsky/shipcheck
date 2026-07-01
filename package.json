@@ -30,7 +30,8 @@
     "ci"
   ],
   "bin": {
-    "shipcheck": "dist/cli.js"
+    "shipcheck": "dist/cli.js",
+    "shipcheckit": "dist/cli.js"
   },
   "main": "dist/index.cjs",
   "module": "dist/index.js",
