@@ -68,13 +68,22 @@ export function accessibleName($: CheerioAPI, $el: CheerioEl): string {
   return collapse($el.attr('title'));
 }
 
+/** Inline styles that remove an element from layout and the a11y tree. */
+const HIDDEN_STYLE = /(?:^|[;\s])(?:display\s*:\s*none|visibility\s*:\s*hidden)\b/i;
+
 /**
  * True when the element (or any ancestor) is removed from the accessibility
- * tree via `aria-hidden="true"` or the `hidden` attribute. Such elements should
- * not be flagged for missing names/labels.
+ * tree via `aria-hidden="true"`, the `hidden` attribute, or an inline
+ * `display:none` / `visibility:hidden` style. Such elements should not be
+ * flagged for missing names/labels. Note: hiding via an external CSS class
+ * cannot be detected by static analysis and is intentionally not covered.
  */
 export function isHiddenFromA11y($el: CheerioEl): boolean {
-  return $el.closest('[aria-hidden="true"], [hidden]').length > 0;
+  if ($el.closest('[aria-hidden="true"], [hidden]').length > 0) return true;
+  const chain = [...$el.toArray(), ...$el.parents().toArray()];
+  return chain.some(
+    (node) => 'attribs' in node && HIDDEN_STYLE.test(node.attribs.style ?? ''),
+  );
 }
 
 /** Join a small sample of items for evidence, noting how many were omitted. */

@@ -58,6 +58,23 @@ describe('Accessibility checks', () => {
     expect(ids(results)).not.toContain('a11y.link_text.missing');
   });
 
+  it('ignores controls hidden via inline display:none / visibility:hidden', async () => {
+    const results = await runRules(
+      accessibilityRules,
+      doc({
+        body: [
+          '<button style="display:none"></button>',
+          '<a href="/x" style="display:none"></a>',
+          '<input type="text" style="display:none">',
+          '<div style="visibility:hidden"><button></button></div>',
+        ].join(''),
+      }),
+    );
+    expect(ids(results)).not.toContain('a11y.button_text.missing');
+    expect(ids(results)).not.toContain('a11y.link_text.missing');
+    expect(ids(results)).not.toContain('a11y.input_label.missing');
+  });
+
   it('flags inputs without labels but accepts aria-label and wrapping label', async () => {
     const results = await runRules(
       accessibilityRules,
