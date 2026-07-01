@@ -7,3 +7,6 @@ coverage
 .env.*
 shipcheck-report.*
 .claude
+
+# Local planning notes (not for the public repo)
+SHIPCHECK_PROJECT_PLAN.md
