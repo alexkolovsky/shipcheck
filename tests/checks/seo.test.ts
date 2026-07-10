@@ -55,6 +55,11 @@ describe('SEO checks', () => {
     expect(byId(results, 'seo.noindex')?.status).toBe('error');
   });
 
+  it('flags a very short title as info only (brand homepages)', async () => {
+    const results = await runRules(seoRules, page('<title>Astro</title>'));
+    expect(byId(results, 'seo.title.too_short')?.status).toBe('info');
+  });
+
   it('warns when there is no H1 and flags multiple H1s', async () => {
     const none = await runRules(seoRules, page('<title>No heading page here</title>', '<p>x</p>'));
     expect(ids(none)).toContain('seo.h1.missing');
@@ -63,7 +68,8 @@ describe('SEO checks', () => {
       seoRules,
       page('<title>Two headings page</title>', '<h1>A</h1><h1>B</h1>'),
     );
-    expect(ids(many)).toContain('seo.h1.multiple');
+    // Info, not warning: multiple h1s are valid HTML5.
+    expect(byId(many, 'seo.h1.multiple')?.status).toBe('info');
   });
 
   it('reports robots.txt / sitemap.xml probe results when provided', async () => {
@@ -75,5 +81,17 @@ describe('SEO checks', () => {
     const results = await runRules(seoRules, ctx);
     expect(ids(results)).toContain('seo.robots_txt.missing');
     expect(byId(results, 'seo.sitemap.present')?.status).toBe('pass');
+  });
+
+  it('stays silent when a probe was inconclusive (bot-blocked)', async () => {
+    const ctx = makeContext({
+      html: '<html lang="en"><head><title>Blocked probes page</title></head><body><h1>x</h1></body></html>',
+      robotsTxt: { exists: false, url: 'https://example.com/robots.txt', unknown: true },
+      sitemapXml: { exists: false, url: 'https://example.com/sitemap.xml', unknown: true },
+    });
+    const results = await runRules(seoRules, ctx);
+    expect(ids(results)).not.toContain('seo.robots_txt.missing');
+    expect(ids(results)).not.toContain('seo.sitemap.missing');
+    expect(ids(results)).not.toContain('seo.sitemap.present');
   });
 });

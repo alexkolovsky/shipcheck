@@ -1,7 +1,9 @@
 # Checks
 
 Every check emits a result with a stable **rule ID** and a status: `pass` (✅,
-no penalty), `info` (ℹ️, −1), `warning` (⚠️, −4), or `error` (❌, −10).
+no penalty), `info` (ℹ️, −1), `warning` (⚠️, −4), or `error` (❌, −10). A few
+informational findings marked **info\*** below are reported but never counted
+against the score.
 
 Rule IDs are stable and can be used in the [`ignore`](configuration.md) list or
 given a custom severity via the `checks` map. The tables below list the
@@ -18,19 +20,23 @@ given a custom severity via the `checks` map. The tables below list the
 | Rule ID                          | Default | Meaning                                     |
 | -------------------------------- | ------- | ------------------------------------------- |
 | `seo.title.missing`              | error   | No `<title>` in the document head           |
-| `seo.title.too_short`            | warning | Title shorter than the configured minimum   |
+| `seo.title.too_short`            | info    | Title shorter than the configured minimum   |
 | `seo.title.too_long`             | warning | Title likely to be truncated in results     |
 | `seo.meta_description.missing`   | warning | No `<meta name="description">`              |
 | `seo.meta_description.too_short` | info    | Meta description shorter than recommended   |
 | `seo.meta_description.too_long`  | info    | Meta description likely to be truncated     |
 | `seo.h1.missing`                 | warning | No `<h1>` on the page                       |
-| `seo.h1.multiple`                | warning | More than one `<h1>`                        |
+| `seo.h1.multiple`                | info    | More than one `<h1>`                        |
 | `seo.noindex`                    | error   | `noindex` via meta robots or `X-Robots-Tag` |
 | `seo.canonical.missing`          | info    | No `<link rel="canonical">`                 |
 | `seo.open_graph.incomplete`      | info    | Missing one of og:title/description/image   |
 | `seo.twitter_card.missing`       | info    | No `<meta name="twitter:card">`             |
 | `seo.robots_txt.missing`         | info    | `/robots.txt` not found (URL scans)         |
-| `seo.sitemap.missing`            | info    | `/sitemap.xml` not found (URL scans)        |
+| `seo.sitemap.missing`            | info    | No sitemap found (URL scans)                |
+
+A sitemap counts as present when robots.txt declares one via a `Sitemap:`
+directive or `/sitemap.xml` exists. When a probe is blocked (bot filtering,
+network error), no finding is reported rather than a false "missing".
 
 ## Accessibility
 
@@ -86,7 +92,7 @@ Header checks run for URL scans only (a local build has no response headers).
 | `security.csp.missing`                  | warning | No `Content-Security-Policy`               |
 | `security.content_type_options.missing` | warning | No `X-Content-Type-Options: nosniff`       |
 | `security.referrer_policy.missing`      | info    | No `Referrer-Policy`                       |
-| `security.permissions_policy.missing`   | info    | No `Permissions-Policy`                    |
+| `security.permissions_policy.missing`   | info\*  | No `Permissions-Policy` (not scored)       |
 | `security.frame.missing`                | warning | No `X-Frame-Options` / CSP frame-ancestors |
 | `security.powered_by.exposed`           | info    | `X-Powered-By` reveals stack details       |
 | `security.mixed_content`                | warning | HTTPS page loads `http://` assets          |
@@ -104,3 +110,4 @@ Header checks run for URL scans only (a local build has no response headers).
 | `ecommerce.product_image.missing`     | warning | No product image found             |
 | `ecommerce.add_to_cart.missing`       | warning | No add-to-cart control detected    |
 | `ecommerce.cart_link.missing`         | info    | No cart/checkout link detected     |
+| `ecommerce.render_hint`               | info\*  | Page looks client-side rendered and every e-commerce signal is missing — re-run with `--rendered` (not scored) |

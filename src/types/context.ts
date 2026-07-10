@@ -27,6 +27,12 @@ export interface PageAsset {
 export interface OriginFileProbe {
   exists: boolean;
   url: string;
+  /**
+   * True when the probe was inconclusive — e.g. the server rejected it with a
+   * bot-filtering status (403/406/429) or a network error. Checks should not
+   * report the file as missing in this case.
+   */
+  unknown?: boolean;
 }
 
 /**

@@ -28,6 +28,7 @@ interface CliOptions {
   probeAssets?: boolean;
   rendered?: boolean;
   waitUntil?: string;
+  userAgent?: string;
   verbose?: boolean;
 }
 
@@ -84,6 +85,7 @@ async function main(target: string, options: CliOptions): Promise<void> {
         options.rendered && options.waitUntil
           ? (options.waitUntil as (typeof WAIT_EVENTS)[number])
           : undefined,
+      userAgent: options.userAgent,
     });
 
     const kind = classifyTarget(target);
@@ -150,6 +152,10 @@ program
     '--wait-until <event>',
     'With --rendered: navigation wait (load, domcontentloaded, networkidle, commit)',
     'load',
+  )
+  .option(
+    '--user-agent <string>',
+    'Override the User-Agent header sent with every request (some servers vary their response by UA)',
   )
   .option('--no-probe-assets', 'Skip network probing of asset sizes (faster URL scans)')
   .option('--verbose', 'Print verbose debug output to stderr')

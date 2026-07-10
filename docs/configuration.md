@@ -29,6 +29,7 @@ Recognized file names (first match wins):
   "timeoutMs": 15000,
   "rendered": false,
   "renderWaitUntil": "load",
+  "userAgent": "ShipCheck/<version> (+https://github.com/alexkolovsky/shipcheck)",
   "checks": {
     "security.csp.missing": "error",
     "seo.meta_description.too_long": "off"
@@ -68,6 +69,14 @@ When `rendered` is on, the navigation wait condition: `"load"` (default),
 late, script-injected tags (analytics, etc.) the best chance to appear.
 Overridden by `--wait-until`.
 
+### `userAgent`
+
+The `User-Agent` header sent with every request. Defaults to
+`ShipCheck/<version> (+https://github.com/alexkolovsky/shipcheck)`. Some
+servers vary their response by UA (e.g. serve bots different markup than
+browsers) — override this to scan what real visitors see. Overridden by
+`--user-agent`.
+
 ### `checks`
 
 Map of **rule ID → severity**, used to re-classify a check:
@@ -89,4 +98,4 @@ For a single run, values are merged in this order (later wins):
 
 1. Built-in defaults
 2. Config file
-3. CLI flags (`--ecommerce`, `--timeout`, `--rendered`, `--wait-until`)
+3. CLI flags (`--ecommerce`, `--timeout`, `--rendered`, `--wait-until`, `--user-agent`)

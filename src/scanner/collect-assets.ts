@@ -168,16 +168,16 @@ interface AssetMeta {
 async function fetchMeta(
   url: string,
   method: 'HEAD' | 'GET',
-  timeoutMs: number,
+  options: { timeoutMs: number; userAgent?: string },
 ): Promise<(AssetMeta & { ok: boolean }) | undefined> {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  const timer = setTimeout(() => controller.abort(), options.timeoutMs);
   try {
     const response = await fetch(url, {
       method,
       redirect: 'follow',
       signal: controller.signal,
-      headers: { 'user-agent': USER_AGENT },
+      headers: { 'user-agent': options.userAgent ?? USER_AGENT },
     });
     const lengthHeader = response.headers.get('content-length');
     const parsed = lengthHeader ? Number(lengthHeader) : NaN;
@@ -197,12 +197,15 @@ async function fetchMeta(
   }
 }
 
-async function probeAsset(asset: PageAsset, timeoutMs: number): Promise<void> {
+async function probeAsset(
+  asset: PageAsset,
+  options: { timeoutMs: number; userAgent?: string },
+): Promise<void> {
   // Prefer HEAD; fall back to GET for servers that reject or under-report it.
-  const head = await fetchMeta(asset.url, 'HEAD', timeoutMs);
+  const head = await fetchMeta(asset.url, 'HEAD', options);
   let meta = head;
   if (!head || !head.ok || head.sizeBytes === undefined) {
-    const get = await fetchMeta(asset.url, 'GET', timeoutMs);
+    const get = await fetchMeta(asset.url, 'GET', options);
     if (get) meta = get;
   }
   if (!meta) return;
@@ -218,7 +221,7 @@ async function probeAsset(asset: PageAsset, timeoutMs: number): Promise<void> {
  */
 export async function enrichAssetSizes(
   assets: PageAsset[],
-  options: { timeoutMs: number; concurrency?: number; logger?: Logger },
+  options: { timeoutMs: number; userAgent?: string; concurrency?: number; logger?: Logger },
 ): Promise<void> {
   const concurrency = Math.max(1, options.concurrency ?? 8);
   let cursor = 0;
@@ -227,7 +230,7 @@ export async function enrichAssetSizes(
     while (cursor < assets.length) {
       const asset = assets[cursor];
       cursor += 1;
-      await probeAsset(asset, options.timeoutMs);
+      await probeAsset(asset, options);
     }
   };
 

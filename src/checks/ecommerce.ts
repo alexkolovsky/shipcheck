@@ -96,6 +96,34 @@ function hasCartLink(ctx: ShipCheckContext): boolean {
   return false;
 }
 
+/**
+ * Heuristic for a client-rendered app shell: almost no static text content but
+ * several scripts. Static mode can't see anything such a page renders later.
+ */
+function looksClientRendered(ctx: ShipCheckContext): boolean {
+  const bodyText = collapse(ctx.document('body').text());
+  return bodyText.length < 500 && ctx.document('script').length >= 3;
+}
+
+const renderHintRule: ShipCheckRule = {
+  id: 'ecommerce.render_hint',
+  category: 'ecommerce',
+  run(ctx) {
+    if (ctx.rendered || ctx.source !== 'url') return [];
+    const product = findProduct(ctx);
+    if (product || hasPrice(ctx, product) || hasAddToCart(ctx) || hasCartLink(ctx)) return [];
+    if (!looksClientRendered(ctx)) return [];
+    return [
+      info('ecommerce.render_hint', 'Page appears client-side rendered', {
+        description:
+          'Every e-commerce signal is missing and the page is an app shell (little text, ' +
+          'heavy JavaScript), so the findings above are likely artifacts of static scanning.',
+        suggestion: 'Re-run with --rendered so the checks see the JavaScript-rendered DOM.',
+      }),
+    ];
+  },
+};
+
 const productRule: ShipCheckRule = {
   id: 'ecommerce.product',
   category: 'ecommerce',
@@ -212,4 +240,9 @@ const cartLinkRule: ShipCheckRule = {
   },
 };
 
-export const ecommerceRules: ShipCheckRule[] = [productRule, addToCartRule, cartLinkRule];
+export const ecommerceRules: ShipCheckRule[] = [
+  productRule,
+  addToCartRule,
+  cartLinkRule,
+  renderHintRule,
+];

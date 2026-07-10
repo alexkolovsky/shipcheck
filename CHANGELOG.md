@@ -13,6 +13,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `shipcheck` and `shipcheckit`, so the package name and the command name are
   interchangeable. The README now explains the naming up front (`shipcheck`
   on npm is an unrelated tool — the package is `shipcheckit`).
+- **`--user-agent <ua>` flag** (and `userAgent` config key) to override the
+  User-Agent sent with every request — some servers vary their response by UA.
+- **Client-side-rendering hint (`ecommerce.render_hint`).** When a static
+  `--ecommerce` scan finds every e-commerce signal missing on a page that looks
+  like a JS app shell, the report now says the findings are likely artifacts
+  and suggests `--rendered`. Informational only — never scored.
+
+### Changed
+
+- **Noise reduction, informed by dogfooding against 9 real sites:**
+  - `seo.h1.multiple` and `seo.title.too_short` downgraded from `warning` to
+    `info` — multiple h1s are valid HTML5, and short titles on brand homepages
+    ("Wikipedia") are deliberate.
+  - `security.permissions_policy.missing` is still reported but no longer
+    counts against the score: virtually no site sets this header (not MDN,
+    Stripe, Vercel, or GitHub), so it penalized every scan equally.
+
+### Fixed
+
+- **Sitemap detection no longer ignores robots.txt** (fired falsely on 6 of 9
+  dogfood sites). A `Sitemap:` directive in robots.txt now counts as a sitemap;
+  `/sitemap.xml` is only probed as a fallback. Probes rejected by bot filtering
+  (403/406/429) or network errors are treated as inconclusive instead of
+  producing a false "missing" finding — for the sitemap and robots.txt alike.
+- **The User-Agent no longer reports a stale version.** It was hardcoded as
+  `ShipCheck/0.1`; the real package version is now injected.
+
+## [0.5.0] - 2026-07-02
 
 ### Changed
 

@@ -19,8 +19,10 @@ const titleRule: ShipCheckRule = {
 
     const results = [pass('seo.title.present', 'Title exists', { evidence: truncate(title) })];
     if (title.length < titleMinLength) {
+      // Info, not warning: short titles on brand homepages ("Wikipedia") are
+      // usually deliberate.
       results.push(
-        warn('seo.title.too_short', `Title is very short (${title.length} chars)`, {
+        info('seo.title.too_short', `Title is very short (${title.length} chars)`, {
           evidence: truncate(title),
           suggestion: `Aim for roughly ${titleMinLength}–${titleMaxLength} characters.`,
         }),
@@ -95,8 +97,10 @@ const headingsRule: ShipCheckRule = {
     if (count === 1) {
       return [pass('seo.h1.single', 'One H1 found')];
     }
+    // Info, not warning: multiple h1 elements are valid HTML5 and common on
+    // well-built marketing sites.
     return [
-      warn('seo.h1.multiple', `Multiple H1 headings found (${count})`, {
+      info('seo.h1.multiple', `Multiple H1 headings found (${count})`, {
         evidence: `${count} <h1> elements`,
         suggestion: 'Prefer a single H1 per page; use H2–H6 for sub-sections.',
       }),
@@ -185,7 +189,9 @@ const crawlFilesRule: ShipCheckRule = {
   category: 'seo',
   run(ctx) {
     const results: PartialResult[] = [];
-    if (ctx.robotsTxt) {
+    // A probe marked `unknown` (bot-blocked, network error) proves nothing —
+    // emit no finding rather than a false "missing".
+    if (ctx.robotsTxt && !(ctx.robotsTxt.unknown && !ctx.robotsTxt.exists)) {
       results.push(
         ctx.robotsTxt.exists
           ? pass('seo.robots_txt.present', 'robots.txt found')
@@ -194,12 +200,15 @@ const crawlFilesRule: ShipCheckRule = {
             }),
       );
     }
-    if (ctx.sitemapXml) {
+    if (ctx.sitemapXml && !(ctx.sitemapXml.unknown && !ctx.sitemapXml.exists)) {
       results.push(
         ctx.sitemapXml.exists
-          ? pass('seo.sitemap.present', 'sitemap.xml found')
-          : info('seo.sitemap.missing', 'No sitemap.xml found', {
-              suggestion: 'Publish a sitemap.xml so crawlers can discover your pages.',
+          ? pass('seo.sitemap.present', 'Sitemap found', {
+              evidence: truncate(ctx.sitemapXml.url),
+            })
+          : info('seo.sitemap.missing', 'No sitemap found', {
+              suggestion:
+                'Publish a sitemap.xml (or declare one with a Sitemap: line in robots.txt).',
             }),
       );
     }

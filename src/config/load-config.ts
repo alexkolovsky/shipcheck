@@ -59,5 +59,6 @@ export function resolveConfig(
     rendered: overrides.rendered ?? user.rendered ?? defaultConfig.rendered,
     renderWaitUntil:
       overrides.renderWaitUntil ?? user.renderWaitUntil ?? defaultConfig.renderWaitUntil,
+    userAgent: overrides.userAgent ?? user.userAgent,
   };
 }

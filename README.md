@@ -122,6 +122,7 @@ shipcheck https://example.com --fail-on error
 | `--config <path>`   | Path to a `shipcheck.config.json` file                                           |
 | `--rendered`        | Load the page in a headless browser before checking (see below)                  |
 | `--wait-until <e>`  | With `--rendered`: `load` (default), `domcontentloaded`, `networkidle`, `commit` |
+| `--user-agent <ua>` | Override the `User-Agent` header (some servers vary their response by UA)        |
 | `--no-probe-assets` | Skip network probing of asset sizes (faster URL scans)                           |
 | `--verbose`         | Print verbose debug output to stderr                                             |
 | `-v, --version`     | Show version                                                                     |

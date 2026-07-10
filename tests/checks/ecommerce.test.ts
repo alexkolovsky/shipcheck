@@ -28,5 +28,28 @@ describe('E-commerce checks', () => {
     expect(byId(results, 'ecommerce.product_schema.missing')?.status).toBe('warning');
     expect(byId(results, 'ecommerce.product_price.missing')?.status).toBe('warning');
     expect(byId(results, 'ecommerce.add_to_cart.missing')?.status).toBe('warning');
+    // A content page with no scripts is not a client-rendered shell.
+    expect(byId(results, 'ecommerce.render_hint')).toBeUndefined();
+  });
+
+  const spaShell =
+    '<html lang="en"><head><title>Store</title>' +
+    '<script src="/runtime.js"></script><script src="/vendor.js"></script>' +
+    '<script src="/app.js"></script></head><body><div id="root"></div></body></html>';
+
+  it('hints at --rendered when a static scan of an app shell finds nothing', async () => {
+    const results = await runRules(ecommerceRules, makeContext({ html: spaShell }));
+    expect(byId(results, 'ecommerce.render_hint')?.status).toBe('info');
+  });
+
+  it('does not hint when the scan is already rendered', async () => {
+    const results = await runRules(ecommerceRules, makeContext({ html: spaShell, rendered: true }));
+    expect(byId(results, 'ecommerce.render_hint')).toBeUndefined();
+  });
+
+  it('does not hint when any e-commerce signal is present', async () => {
+    const withCartLink = spaShell.replace('<div id="root">', '<a href="/cart">Cart</a><div>');
+    const results = await runRules(ecommerceRules, makeContext({ html: withCartLink }));
+    expect(byId(results, 'ecommerce.render_hint')).toBeUndefined();
   });
 });

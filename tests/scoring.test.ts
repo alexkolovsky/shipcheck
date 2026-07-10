@@ -34,4 +34,19 @@ describe('scoring', () => {
     }));
     expect(computeScore(toIssues(many, 'https://example.com/'))).toBe(0);
   });
+
+  it('does not count score-exempt issues against the score', () => {
+    const exempt: CheckResult[] = [
+      ...results,
+      {
+        id: 'security.permissions_policy.missing',
+        title: 'x',
+        status: 'info',
+        category: 'security',
+      },
+      { id: 'ecommerce.render_hint', title: 'x', status: 'info', category: 'ecommerce' },
+    ];
+    // Same 75 as without the two exempt issues.
+    expect(computeScore(toIssues(exempt, 'https://example.com/'))).toBe(75);
+  });
 });

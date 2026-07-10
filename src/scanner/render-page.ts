@@ -36,6 +36,7 @@ interface PlaywrightModule {
 export interface RenderOptions {
   timeoutMs: number;
   waitUntil?: RenderWaitUntil;
+  userAgent?: string;
   logger?: Logger;
 }
 
@@ -88,7 +89,7 @@ export async function fetchRenderedPage(url: string, options: RenderOptions): Pr
 
   const browser = await chromium.launch({ headless: true });
   try {
-    const context = await browser.newContext({ userAgent: USER_AGENT });
+    const context = await browser.newContext({ userAgent: options.userAgent ?? USER_AGENT });
     const page = await context.newPage();
 
     let response: PwResponse | null;

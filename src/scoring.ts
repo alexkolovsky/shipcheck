@@ -8,6 +8,16 @@ export const SCORE_WEIGHTS: Record<Severity, number> = {
   info: 1,
 };
 
+/**
+ * Issues reported for information only and never counted against the score —
+ * either because virtually no site passes (Permissions-Policy is absent even
+ * on MDN and Stripe) or because they are advice about the scan itself.
+ */
+export const SCORE_EXEMPT_IDS: ReadonlySet<string> = new Set([
+  'security.permissions_policy.missing',
+  'ecommerce.render_hint',
+]);
+
 export function summarize(results: CheckResult[]): ReportSummary {
   const summary: ReportSummary = { errors: 0, warnings: 0, info: 0, passes: 0 };
   for (const result of results) {
@@ -50,6 +60,9 @@ export function toIssues(results: CheckResult[], url: string): ShipCheckIssue[] 
 
 export function computeScore(issues: ShipCheckIssue[]): number {
   let score = 100;
-  for (const issue of issues) score -= SCORE_WEIGHTS[issue.severity];
+  for (const issue of issues) {
+    if (SCORE_EXEMPT_IDS.has(issue.id)) continue;
+    score -= SCORE_WEIGHTS[issue.severity];
+  }
   return Math.max(0, score);
 }

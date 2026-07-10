@@ -40,6 +40,8 @@ export interface ResolvedConfig {
   rendered: boolean;
   /** Navigation wait condition used when {@link rendered} is true. */
   renderWaitUntil: RenderWaitUntil;
+  /** Overrides the default `ShipCheck/<version>` User-Agent for all requests. */
+  userAgent?: string;
 }
 
 /** The shape of an optional `shipcheck.config.json` file. All keys optional. */
@@ -51,6 +53,7 @@ export interface UserConfig {
   timeoutMs?: number;
   rendered?: boolean;
   renderWaitUntil?: RenderWaitUntil;
+  userAgent?: string;
 }
 
 export type CategoryFilter = Category;

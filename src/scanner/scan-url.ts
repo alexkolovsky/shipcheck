@@ -4,7 +4,7 @@ import type { ShipCheckContext } from '../types/context.js';
 import type { Logger } from '../utils/logger.js';
 import { normalizeUrl } from '../utils/url.js';
 import { extractAssets, enrichAssetSizes } from './collect-assets.js';
-import { fetchPage, probeOriginFile, type FetchedPage } from './collect-page.js';
+import { fetchPage, fetchRobotsTxt, probeOriginFile, type FetchedPage } from './collect-page.js';
 import { fetchRenderedPage } from './render-page.js';
 
 export interface ScanUrlOptions {
@@ -28,10 +28,15 @@ export async function scanUrl(target: string, options: ScanUrlOptions): Promise<
           fetchRenderedPage(pageUrl, {
             timeoutMs: config.timeoutMs,
             waitUntil: config.renderWaitUntil,
+            userAgent: config.userAgent,
             logger: options.logger,
           })
       : (pageUrl: string) =>
-          fetchPage(pageUrl, { timeoutMs: config.timeoutMs, logger: options.logger }));
+          fetchPage(pageUrl, {
+            timeoutMs: config.timeoutMs,
+            userAgent: config.userAgent,
+            logger: options.logger,
+          }));
 
   const page = await loadPage(url);
 
@@ -47,15 +52,20 @@ export async function scanUrl(target: string, options: ScanUrlOptions): Promise<
     options.logger?.debug(`Probing ${assets.length} asset(s) for size`);
     await enrichAssetSizes(assets, {
       timeoutMs: options.config.timeoutMs,
+      userAgent: config.userAgent,
       logger: options.logger,
     });
   }
 
+  // Sitemaps are commonly declared in robots.txt rather than living at
+  // /sitemap.xml, so honor Sitemap: directives before probing the default path.
   const origin = new URL(page.finalUrl).origin;
-  const [robotsTxt, sitemapXml] = await Promise.all([
-    probeOriginFile(origin, '/robots.txt', options.config.timeoutMs),
-    probeOriginFile(origin, '/sitemap.xml', options.config.timeoutMs),
-  ]);
+  const probeOptions = { timeoutMs: config.timeoutMs, userAgent: config.userAgent };
+  const robots = await fetchRobotsTxt(origin, probeOptions);
+  const sitemapXml =
+    robots.sitemaps.length > 0
+      ? { exists: true, url: robots.sitemaps[0] }
+      : await probeOriginFile(origin, '/sitemap.xml', probeOptions);
 
   return {
     url,
@@ -67,7 +77,7 @@ export async function scanUrl(target: string, options: ScanUrlOptions): Promise<
     assets,
     source: 'url',
     rendered: config.rendered,
-    robotsTxt,
+    robotsTxt: robots.probe,
     sitemapXml,
     config,
   };
