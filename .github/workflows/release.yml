@@ -31,9 +31,11 @@ jobs:
             exit 1
           fi
       # Trusted Publishing (OIDC) needs npm >= 11.5.1; Node 22 ships npm 10.
+      # Pinned to 11.x: npm 12.0.0's publish is broken (provenance.js requires
+      # a 'sigstore' module that isn't bundled — v0.5.1 hit this with @latest).
       - name: Upgrade npm for OIDC trusted publishing
         run: |
-          npm install -g npm@latest
+          npm install -g npm@11
           npm --version
       - run: npm ci
       - run: npm run lint
